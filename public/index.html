@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Telegram Chat ID Finder</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #0f172a;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .box {
+      background: #020617;
+      padding: 25px;
+      border-radius: 10px;
+      width: 350px;
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 6px;
+      border: none;
+    }
+    button {
+      background: #22c55e;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .result {
+      margin-top: 15px;
+      font-size: 14px;
+      background: #020617;
+      padding: 10px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h3>🤖 Telegram Chat ID Finder</h3>
+    <input id="token" placeholder="Paste bot token here" />
+    <button onclick="getChatId()">Get Chat IDs</button>
+    <div id="output"></div>
+  </div>
+
+  <script>
+    async function getChatId() {
+      const token = document.getElementById("token").value;
+      const out = document.getElementById("output");
+      out.innerHTML = "⏳ Fetching...";
+
+      const res = await fetch("/get-chat-id", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token })
+      });
+
+      const data = await res.json();
+
+      if (!data.success) {
+        out.innerHTML = "❌ " + data.error;
+        return;
+      }
+
+      out.innerHTML = data.chats.map(c =>
+        `<div class="result">
+          <b>ID:</b> ${c.id}<br>
+          <b>Type:</b> ${c.type}<br>
+          <b>Name:</b> ${c.name}
+        </div>`
+      ).join("");
+    }
+  </script>
+</body>
+</html>
